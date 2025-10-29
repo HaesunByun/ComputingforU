@@ -93,104 +93,15 @@ def project_list():
     
 
 
-# def show_seating(class_number):
-#     """
-#     반 번호를 받아 좌석표를 표시하는 함수
-#     class_number : 1, 2, 3
-#     """
-#     file_path = "class_students_numbered.xls"
-#     sheet_name = f"{class_number}반"
-
-#     # ✅ 반이 바뀌면 전체 상태 초기화
-#     if "current_class" not in st.session_state or st.session_state.current_class != class_number:
-#         st.session_state.clear()
-#         st.session_state.current_class = class_number
-
-#     # --- 엑셀 파일 불러오기 ---
-#     try:
-#         df_students = pd.read_excel(file_path, sheet_name=sheet_name)
-#     except Exception as e:
-#         st.error(f"학생 명단 불러오기 실패: {e}")
-#         return
-
-#     # ✅ 이름 앞에 번호 붙이기
-#     students = df_students['성명'].dropna().tolist()
-
-#     rows, cols = 10, 9
-
-#     # --- 좌석표 생성 (처음이거나 비어있을 때만) ---
-#     if "seat_table" not in st.session_state or len(st.session_state.seat_table) == 0:
-#         seat_table = []
-#         seat_index = 0
-#         for r in range(rows):
-#             row = []
-#             for c in range(cols):
-#                 if c == 4:
-#                     row.append(" ")  # 통로
-#                 else:
-#                     if seat_index < len(students):
-#                         row.append(students[seat_index])
-#                         seat_index += 1
-#                     else:
-#                         row.append("")  # 빈 자리
-#             seat_table.append(row)
-#         st.session_state.seat_table = seat_table
-
-#     # --- 선택 상태 저장 ---
-#     if "selected_student" not in st.session_state:
-#         st.session_state.selected_student = None
-#         st.session_state.selected_pos = None
-
-#     st.write(f"🪑 **{class_number}반 좌석표 (이름 클릭 → 빈칸 클릭으로 이동)**")
-
-#     # --- 좌석 테이블 표시 ---
-#     for r in range(rows):
-#         cols_in_row = st.columns(cols)
-#         for c in range(cols):
-#             name = st.session_state.seat_table[r][c]
-
-
-#             if name == " ":
-#                 cols_in_row[c].markdown(" ")
-#                 continue
-
-#             label = name if name else "⬜️"
-
-#             clicked = cols_in_row[c].button(label, key=f"seat_{r}_{c}_{class_number}")
-
-#             if clicked:
-#                 # 이름 클릭 시 → 선택
-#                 if name and name.strip() != "":
-#                     st.session_state.selected_student = name
-#                     st.session_state.selected_pos = (r, c)
-#                     st.experimental_rerun()
-
-#                 # 빈칸 클릭 시 → 이동
-#                 elif (not name or name.strip() == "") and st.session_state.selected_student:
-#                     src_r, src_c = st.session_state.selected_pos
-#                     if st.session_state.seat_table[src_r][src_c] and st.session_state.seat_table[r][c] != " ":
-#                         st.session_state.seat_table[r][c] = st.session_state.selected_student
-#                         st.session_state.seat_table[src_r][src_c] = ""
-#                         st.session_state.selected_student = None
-#                         st.session_state.selected_pos = None
-#                         st.experimental_rerun()
-
-#     # --- 선택 상태 표시 ---
-#     if st.session_state.selected_student:
-#         st.info(f"선택된 학생: **{st.session_state.selected_student}** — 이동할 빈칸을 클릭하세요.")
-
 def show_seating(class_number):
     """
     반 번호를 받아 좌석표를 표시하는 함수
     class_number : 1, 2, 3
     """
-    import pandas as pd
-    import streamlit as st
-
     file_path = "class_students_numbered.xls"
     sheet_name = f"{class_number}반"
-    
-    # --- 반 바뀌면 전체 상태 초기화 ---
+
+    # ✅ 반이 바뀌면 전체 상태 초기화
     if "current_class" not in st.session_state or st.session_state.current_class != class_number:
         st.session_state.clear()
         st.session_state.current_class = class_number
@@ -202,12 +113,13 @@ def show_seating(class_number):
         st.error(f"학생 명단 불러오기 실패: {e}")
         return
 
-    students = df_students['성명'].dropna().tolist()  # 이미 번호가 붙어 있음
+    # ✅ 이름 앞에 번호 붙이기
+    students = df_students['성명'].dropna().tolist()
 
-    rows, cols = 10, 9  # 4열-5열 통로 포함
+    rows, cols = 10, 9
 
-    # --- 좌석표 생성 ---
-    if "seat_table" not in st.session_state or st.session_state.current_class != class_number:
+    # --- 좌석표 생성 (처음이거나 비어있을 때만) ---
+    if "seat_table" not in st.session_state or len(st.session_state.seat_table) == 0:
         seat_table = []
         seat_index = 0
         for r in range(rows):
@@ -224,7 +136,7 @@ def show_seating(class_number):
             seat_table.append(row)
         st.session_state.seat_table = seat_table
 
-    # --- 선택 상태 초기화 ---
+    # --- 선택 상태 저장 ---
     if "selected_student" not in st.session_state:
         st.session_state.selected_student = None
         st.session_state.selected_pos = None
@@ -237,14 +149,14 @@ def show_seating(class_number):
         for c in range(cols):
             name = st.session_state.seat_table[r][c]
 
+
             if name == " ":
-                cols_in_row[c].markdown(" ")  # 통로
+                cols_in_row[c].markdown(" ")
                 continue
 
             label = name if name else "⬜️"
 
-            # 버튼 key에 이름 포함 → 레이블 변경시 새로 렌더링
-            clicked = cols_in_row[c].button(label, key=f"seat_{r}_{c}_{class_number}_{name}")
+            clicked = cols_in_row[c].button(label, key=f"seat_{r}_{c}_{class_number}")
 
             if clicked:
                 # 이름 클릭 시 → 선택
@@ -253,7 +165,7 @@ def show_seating(class_number):
                     st.session_state.selected_pos = (r, c)
                     st.experimental_rerun()
 
-                # 빈자리 클릭 시 → 이동
+                # 빈칸 클릭 시 → 이동
                 elif (not name or name.strip() == "") and st.session_state.selected_student:
                     src_r, src_c = st.session_state.selected_pos
                     if st.session_state.seat_table[src_r][src_c] and st.session_state.seat_table[r][c] != " ":
@@ -263,7 +175,7 @@ def show_seating(class_number):
                         st.session_state.selected_pos = None
                         st.experimental_rerun()
 
-    # --- 선택 상태 안내 ---
+    # --- 선택 상태 표시 ---
     if st.session_state.selected_student:
         st.info(f"선택된 학생: **{st.session_state.selected_student}** — 이동할 빈칸을 클릭하세요.")
 
