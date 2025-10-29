@@ -86,14 +86,11 @@ def project_list():
 #             df = pd.read_excel(input_file, sheet_name=sheet)
             
 #             # '성명' 컬럼에 번호 붙이기
-#             df['성명'] = [f"{i+1}. {name}" for i, name in enumerate(df['성명'].dropna())]
+#             df['성명'] = [f"{i+1}.{name}" for i, name in enumerate(df['성명'].dropna())]
             
 #             # 기존 NaN은 그대로 두고 시트 저장
 #             df.to_excel(writer, sheet_name=sheet, index=False)
     
-import streamlit as st
-import pandas as pd
-
 def show_seating(class_number):
     """
     반 번호를 받아 좌석표를 표시하는 함수
@@ -150,12 +147,11 @@ def show_seating(class_number):
         cols_in_row = container.columns(cols)
         for c in range(cols):
             name = st.session_state.seat_table[r][c]
-
             if name == " ":
                 cols_in_row[c].markdown(" ")
                 continue
 
-            label = name if name else "⬜️"
+            label = str(name) if name else "⬜️"  
             clicked = cols_in_row[c].button(label, key=f"seat_{r}_{c}_{class_number}")
 
             if clicked:
@@ -175,7 +171,7 @@ def show_seating(class_number):
 
     # --- 선택 상태 안내 ---
     if st.session_state.selected_student:
-        st.info(f"선택된 학생: **{st.session_state.selected_student}** — 이동할 빈칸을 클릭하세요.")
+        st.info(f"선택된 학생: **{st.session_state.selected_student}** — 이동할 빈칸을 더블클릭하세요.")
 
 
 def main():
@@ -189,13 +185,12 @@ def main():
 
     # --- 오른쪽 화면 내용 ---
     if menu == "중간고사 좌석배치도":
-        # 반 선택
-        # --- 사용 예시 ---
+
         # input_file = "class_students.xls"
         # output_file = "class_students_numbered.xls"
         # sheets = ["1반", "2반", "3반"]
 
-        #add_numbers_to_names(input_file, output_file, sheets)        
+        # add_numbers_to_names(input_file, output_file, sheets)        
         selected_class = st.sidebar.radio("반 선택:", ("1반", "2반", "3반"))
         class_number = int(selected_class[0])
         show_seating(class_number)
