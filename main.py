@@ -163,7 +163,7 @@ def show_seating(class_number):
                 if name and name.strip() != "":
                     st.session_state.selected_student = name
                     st.session_state.selected_pos = (r, c)
-                    st.experimental_rerun()
+                    #st.experimental_rerun()
 
                 # 빈칸 클릭 시 → 이동
                 elif (not name or name.strip() == "") and st.session_state.selected_student:
